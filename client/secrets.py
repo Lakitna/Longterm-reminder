@@ -1,3 +1,3 @@
 def ssid = '###'
 def ssidpassword = '###'
-def apikey = '###';
+def apikey = '#####';
