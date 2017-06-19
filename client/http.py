@@ -11,7 +11,6 @@ connectSsid = secrets.ssid
 connectPass = secrets.ssidpassword
 
 
-
 def updateJSON(url, json):
     led.low()
 
@@ -24,9 +23,9 @@ def getJSON(url):
     led.low()
 
     response = http_request(url)
-    data = str(response, 'utf8')        # Encoding casting
-    data = '{' + data.split('{', 1)[1]  # Strip HTTP headers
-    data = ujson.loads(data)            # Convert to JSON
+    data = str(response, 'utf8')       # Encoding casting
+    data = '{' + data.split('{', 1)[1] # Strip HTTP headers
+    data = ujson.loads(data)           # Convert to JSON
 
     led.high()
     return data
@@ -53,5 +52,6 @@ def do_connect():
         sta_if.connect(connectSsid, connectPass)
         while not sta_if.isconnected():
             pass
-    print('Network secrets:', sta_if.ifsecrets())
+    print('Success')
+    # print('Network secrets:', sta_if.ifconfig())
     led.high()
