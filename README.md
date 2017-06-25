@@ -6,7 +6,7 @@ Because I am a forgetfull person I decided to make a longterm reminder. Somethin
 
 The WiFi capabilities of the onboard esp8266 will be used to create a elegant way of editing the reminders via a web interface.
 
-I'm pairing the D1 mini with a Nokia 3310/5110 screen I had laying around. I like this screen because it has the same 3,3v logic as the controller, and because it doesn't produce any light. That's nice because I'm deploying the final version in my bedroom.
+Initially I wanted to pair the D1 mini with a Nokia 3310/5110 screen I had laying around, but I managed to break it. Now I'm going to use a I2C OLED display. Because this screen produces light I'll also add a LDR. Details will follow.
 
 This is a [Micropython](https://github.com/micropython/micropython) project.
 

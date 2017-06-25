@@ -39,3 +39,4 @@ Thumbs.db
 # Api keys, passwords and other secrets #
 #########################################
 secrets.py
+client/hack.py
