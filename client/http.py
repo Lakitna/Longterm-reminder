@@ -8,7 +8,6 @@ import ujson
 led = Pin(2, Pin.OUT)
 receiveBuffer = 4096
 
-
 def updateJSON(url, json):
     led.off()
 
