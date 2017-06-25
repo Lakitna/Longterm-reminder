@@ -1,30 +1,41 @@
-import time
-import machine
+# Classes & backend
+from secrets import apikey
+from delay import Delay
+from timekeeper import TimeKeeper
 import http
-import screen
-import blink
-import secrets
+
+# Script extention
+import inputs
+# import screen
 
 
-apiUrl = "http://api.lakitna.nl/?key=" + secrets.apikey
-
-backlight = machine.Pin(4, machine.Pin.OUT)
-
-
-print("Main.py");
+# Global settings
+HTTPupdateDelay = Delay(10 * 60 * 1000) # delay time in milliseconds
+apiUrl = "http://api.lakitna.nl/?key=" + apikey + "&src=mpy"
 
 
-backlight.high()
+# Empty var declaration
+
+
+# Start setup
 http.do_connect()
-backlight.low()
+time = TimeKeeper(0,0,0,0,0)
 
 
-
+# Start loop
 while True:
-	response = http.getJSON(apiUrl);
-	print(str(response['time']['h']) + ':' + str(response['time']['m']))
-	print(response);
+	inputs.poll();
+	time.poll();
 
-	# http.updateJSON(apiUrl, '0:{"latest":{"y":2017,"m":6,"d":2},"next":{"y":2017,"m":9,"d":2}}')
+	# If interval passed or on first loop
+	if HTTPupdateDelay.noSleep():
+		response = http.getJSON(apiUrl);
+		print()
+		print(response);
 
-	time.sleep(60);
+		# Set TimeKeeper to server time
+		time.set(response['now']['Y'], response['now']['M'], response['now']['D'], response['now']['h'], response['now']['m'])
+		print(time.get_stamp())
+
+		# Works
+		# http.updateJSON(apiUrl, '{"0":{"latest":{"y":2017,"m":6,"d":2},"next":{"y":2017,"m":9,"d":2}}}')
