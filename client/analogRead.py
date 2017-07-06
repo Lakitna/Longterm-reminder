@@ -10,7 +10,7 @@ class Analog:
         self._readings = iterations
 
         self.val = 0
-        self.val_period = 0
+        self.val_period = self.poll()
 
     def poll(self):
         tmp = 0

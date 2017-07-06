@@ -3,19 +3,26 @@ from machine import Pin
 from network import WLAN, STA_IF
 import usocket
 import ujson
+import urequests
 
 
 led = Pin(2, Pin.OUT)
-receiveBuffer = 4096
+# receiveBuffer = 4096
+receiveBuffer = 8192
 
 def updateJSON(url, json):
     led.off()
 
-    response = http_request(url + "&edit=" + json)
-    response = str(response, 'utf8')
-    response = response.split('\r\n\r\n', 1)[1]
+    if type(json) is dict:
+        json = ujson.dumps(json) # To JSON string
 
-    print("Server response: %s" % response)
+    json = json.replace(": ", ":")  # Remove spaces from string
+    json = json.replace(", ", ",")  # Remove spaces from string
+    json = json.replace(" ", "%20") # Spaces to url encoding
+
+    req = urequests.get(url + "&edit=" + json)
+    print("Server response: %s" % req.text)
+    req.close()
 
     led.on()
 
@@ -23,13 +30,12 @@ def updateJSON(url, json):
 def getJSON(url):
     led.off()
 
-    response = http_request(url)
-    data = str(response, 'utf8')       # Encoding casting
-    data = data.split('\r\n\r\n', 1)[1] # Strip HTTP headers
-    data = ujson.loads(data)           # Convert to JSON
+    r = urequests.get(url)
+    ret = r.json()
+    r.close()
 
     led.on()
-    return data
+    return ret
 
 
 def http_request(url, method='GET'):
@@ -39,7 +45,9 @@ def http_request(url, method='GET'):
     s.connect(addr)
     s.send(bytes('%s /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (method, path, host), 'utf8'))
 
+    # print(s.recv(receiveBuffer))
     ret = s.recv(receiveBuffer)
+
     s.close()
     return ret
 
@@ -48,11 +56,11 @@ def do_connect():
     led.off()
     sta_if = WLAN(STA_IF)
     if not sta_if.isconnected():
-        print('Connecting to network...')
         sta_if.active(True)
         sta_if.connect(ssid, ssidpassword)
+
         while not sta_if.isconnected():
+            # Add timeout counter
             pass
-    print('(\(^_^)/) Success')
     # print('Network secrets:', sta_if.ifconfig())
     led.on()

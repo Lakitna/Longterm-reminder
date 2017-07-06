@@ -1,10 +1,10 @@
 from machine import Pin
 from utime import sleep_us
 
-
 class Button:
     def __init__(self, p, iterations):
         self._pin = Pin(p, Pin.IN, Pin.PULL_UP)
+        self.val = 1
         self._valA = 1
         self._valB = 1
         self._readings = iterations
@@ -31,8 +31,10 @@ class Button:
         if tmp == self._readings:
             self._valB = self._valA
             self._valA = 1
+            self.val = True
             return 1
         elif tmp == 0:
             self._valB = self._valA
             self._valA = 0
+            self.val = False
             return 0

@@ -1,54 +1,61 @@
-import time
-import machine
-import gfx
-import PCD8544 as LCD
-# import Nokia_5110 as display
-# from PIL import Image
-# from PIL import ImageDraw
-# from PIL import ImageFont
+import utime as time
+from machine import Pin, I2C
+from sh1106 import SH1106_I2C
+import framebuf
+import icons
 
-SPI = machine.SPI
+class Screen:
+    i2c = I2C(scl=Pin(5), sda=Pin(4), freq=400000)
+    lineHeight = 10
 
+    def __init__(self):
+        self.w = 128
+        self.h = 64
 
-# Software serial pin setup
-SCLK = 16
-DIN = 14
-DOUT = 0
-DC = 12
-RST = 15
-CS = 13
+        self.oled = SH1106_I2C(self.w, self.h, self.i2c, Pin(16), 0x3c)
+        self.oled.init_display()
 
+        self.fps = 0
+        self.fps_sec_prev = 0
+        self.fps_c = 0
+        self.fps_new_sec = False
+    # print( i2c.scan() )
 
-print(dir(LCD))
-# disp = display.PCD8544(DC, RST, SCLK, DIN, CS)
-# disp = display.Adafruit_PCD8544(SCLK, DIN, DC, RST, CS)
+    def fpsPoll(self):
+        sec = time.time()
+        if sec == self.fps_sec_prev:
+            self.fps_c += 1
+            self.fps_new_sec = False
+        else:
+            self.fps = self.fps_c
+            self.fps_c = 0
+            self.fps_sec_prev = sec
+            self.fps_new_sec = True
 
-# software SPI usage:
-disp = LCD.PCD8544(DC, RST, SCLK, DIN, DOUT, CS)
+    def text(self, txt, x=0, y=0, repl=False):
+        txt = txt.split('\n')
 
-# Software SPI usage (defaults to bit-bang SPI interface):
-#disp = LCD.PCD8544(DC, RST, SCLK, DIN, CS)
+        for i in range(0,len(txt)):
+            self.oled.text(txt[i], x, (y + (self.lineHeight*i)), 2)
 
-# Initialize library.
-disp.begin(contrast=60)
+        if repl:
+            print(txt)
 
-# Clear display.
-disp.clear()
-disp.display()
+    def icon(self, id, x=0, y=0):
+        fb = framebuf.FrameBuffer(icons.get(id), 32, 32, framebuf.MVLSB)
+        self.oled.framebuf.blit(fb, x, y)
 
-#
-# # Draw a white filled box to clear the image.
-# draw.rectangle((0,0,LCD.LCDWIDTH,LCD.LCDHEIGHT), outline=255, fill=255)
-#
-# # Draw some shapes.
-# draw.ellipse((2,2,22,22), outline=0, fill=255)
-# draw.rectangle((24,2,44,22), outline=0, fill=255)
-# draw.polygon([(46,22), (56,2), (66,22)], outline=0, fill=255)
-# draw.line((68,22,81,2), fill=0)
-# draw.line((68,2,81,22), fill=0)
-#
-# disp.display()
+    def rect(self, x, y, w, h):
+        self.oled.fill_rect(x,y,w,h,1)
 
-# print('Press Ctrl-C to quit.')
-# while True:
-# 	time.sleep(1.0)
+    def line(self, x1, y1, x2, y2):
+        self.oled.line(x1, y1, x2, y2, 1)
+
+    def clear(self):
+        self.oled.fill(0)
+
+    def sleep(self, state):
+        self.oled.sleep(state)
+
+    def show(self):
+        self.oled.show()
