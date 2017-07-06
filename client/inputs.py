@@ -19,7 +19,7 @@ def poll():
     if but_B.down():
         but_B_down()
 
-    ldr_A.poll_period(300): # in seconds
+    ldr_A.poll_period(300) # in seconds
 
 
 def but_A_down():

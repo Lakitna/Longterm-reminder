@@ -13,7 +13,7 @@ import inputs
 # Global settings
 ##################
 set_dayCountActive = 7		# Max days left before reminder becomes active
-set_ldrMinValue = 1		# LDR value under which screen turns off [0-1023]
+set_ldrMinValue = 10		# LDR value under which screen turns off [0-1023]
 
 HTTPupdateDelay = Delay(10 * 60 * 1000) # delay time in milliseconds
 screenUpdateDelay = Delay(1 * 1000)		# delay time in milliseconds
