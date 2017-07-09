@@ -7,6 +7,8 @@ but_B = digitalRead.Button(2, 3) # (pin, readings per poll)
 ldr_A = analogRead.Analog(0, 3) # (pin, readings per poll)
 
 def poll():
+    ldr_A.poll_period(60) # in seconds
+
     but_A.poll()
     if but_A.up():
         but_A_up()
@@ -18,8 +20,6 @@ def poll():
         but_B_up()
     if but_B.down():
         but_B_down()
-
-    ldr_A.poll_period(300) # in seconds
 
 
 def but_A_down():

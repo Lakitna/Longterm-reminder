@@ -26,12 +26,10 @@ class Analog:
         now = ticks_ms()
         ret = False
         if ticks_diff(now, self._ms_prev) > 1000:
-            # self._val_sum += self.poll()
-            self._val_sum += self.poll() * (1/seconds)
+            self._val_sum += int( self.poll() * (1/seconds) )
 
             self._counter += 1
             if self._counter >= seconds:
-                # ret = int(self._val_sum / self._counter)
                 ret = self._val_sum
                 self.val_period = self._val_sum
 

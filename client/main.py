@@ -17,7 +17,7 @@ set_ldrMinValue = 10		# LDR value under which screen turns off [0-1023]
 
 HTTPupdateDelay = Delay(10 * 60 * 1000) # delay time in milliseconds
 screenUpdateDelay = Delay(1 * 1000)		# delay time in milliseconds
-apiUrl = "http://api.lakitna.nl/?key=" + apikey + "&src=upy"  # URL to API
+apiUrl = "http://api.lakitna.nl/?src=upy&key=" + apikey # URL to API
 
 
 # Empty var declaration
@@ -58,7 +58,6 @@ while True:
 		HTTPupdateFlag = False
 
 		response = http.getJSON(apiUrl)
-
 		print()
 		print(response);
 
@@ -89,8 +88,6 @@ while True:
 				if i in activeReminders:
 					activeReminders.remove(i)
 
-			print(len(activeReminders))
-
 
 	# Clear display
 	oled.clear()
@@ -113,28 +110,26 @@ while True:
 			oled.text(descr, (64 - ( len(descr) * 4 )), 36) # Center aligned
 
 		elif len(activeReminders) == 2:
+			# Left column
 			descr = response[str(activeReminders[0])]['descr']
 			oled.icon(response[str(activeReminders[0])]['icon'], 16, 0)
 			oled.text(descr, (32 - ( len(descr) * 4 )), 36) # Center aligned
 
-			oled.line(64,0, 64,64)
+			oled.line(64,0, 64,64) # Column devider
 
+			# Right column
 			descr = response[str(activeReminders[1])]['descr']
 			oled.icon(response[str(activeReminders[1])]['icon'], 80, 0)
 			oled.text(descr, (96 - ( len(descr) * 4 )), 36) # Center aligned
 
 
+		# Button state rectangles
 		oled.text(str(oled.fps), 0, 56)
 		if inputs.but_A.val == 1:
 			oled.rect(107, 62, 10, 2)
+		else:
+			oled.text(str(inputs.ldr_A.val_period), 104, 52)
 		if inputs.but_B.val == 1:
 			oled.rect(118, 62, 10, 2)
 
 		oled.show()
-
-
-
-		# oled.clear()
-		# oled.text('%s' % displayText, 0, 0)
-		# oled.icon(currentIcon, 96, 0)
-		# oled.text(str(oled.fps), 0, 50)

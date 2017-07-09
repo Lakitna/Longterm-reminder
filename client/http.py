@@ -1,9 +1,10 @@
 from secrets import ssid, ssidpassword
-from machine import Pin
+from machine import Pin, idle
 from network import WLAN, STA_IF
 import usocket
 import ujson
 import urequests
+from utime import sleep
 
 
 led = Pin(2, Pin.OUT)
@@ -45,7 +46,6 @@ def http_request(url, method='GET'):
     s.connect(addr)
     s.send(bytes('%s /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (method, path, host), 'utf8'))
 
-    # print(s.recv(receiveBuffer))
     ret = s.recv(receiveBuffer)
 
     s.close()
@@ -54,13 +54,13 @@ def http_request(url, method='GET'):
 
 def do_connect():
     led.off()
-    sta_if = WLAN(STA_IF)
-    if not sta_if.isconnected():
-        sta_if.active(True)
-        sta_if.connect(ssid, ssidpassword)
+    wlan = WLAN(STA_IF)
+    if not wlan.isconnected():
+        wlan.active(True)
+        wlan.connect(ssid, ssidpassword)
 
-        while not sta_if.isconnected():
-            # Add timeout counter
+        while not wlan.isconnected():
+            idle()
             pass
     # print('Network secrets:', sta_if.ifconfig())
     led.on()
