@@ -27,7 +27,7 @@ def poll():
 def but_A_down():
     print("Av %d" % ldr_A.val)
     if len(activeReminders) > 0:
-        setComplete( activeReminders[0] )
+        setComplete( activeReminders[ next(iter(activeReminders)) ] )
 
 def but_A_up():
     print("A^")

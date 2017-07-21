@@ -10,7 +10,7 @@ def defineActive(activeReminders, response):
 			activeReminders[ response['id'] ] = response
 	else:
 		if response['id'] in activeReminders:
-			activeReminders.remove( response['id'] )
+			del activeReminders[ response['id'] ]
 
 def setComplete(reminder):
 	updateJSON( {str(reminder['id']): {'latest': settings.time.get_obj(), 'next': addMonth( settings.time.get_obj(), reminder['freq_month'] )}} )
