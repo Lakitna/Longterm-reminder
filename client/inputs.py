@@ -1,5 +1,7 @@
 import digitalRead
 import analogRead
+from httpUpdate import activeReminders
+from reminder import setComplete
 
 
 but_A = digitalRead.Button(13, 3) # (pin, readings per poll)
@@ -24,6 +26,8 @@ def poll():
 
 def but_A_down():
     print("Av %d" % ldr_A.val)
+    if len(activeReminders) > 0:
+        setComplete( activeReminders[0] )
 
 def but_A_up():
     print("A^")

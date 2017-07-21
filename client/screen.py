@@ -3,6 +3,9 @@ from machine import Pin, I2C
 from sh1106 import SH1106_I2C
 import framebuf
 import icons
+from httpUpdate import activeReminders
+import inputs
+import settings
 
 class Screen:
     i2c = I2C(scl=Pin(5), sda=Pin(4), freq=400000)
@@ -67,3 +70,74 @@ class Screen:
 
     def show(self):
         self.oled.show()
+
+
+
+
+oled = Screen()
+
+def statusShow(id):
+    oled.clear()
+    if id == 0:
+        oled.icon('wifi', 48, 10)
+        oled.text("Connecting", 24, 44, 0, True)
+    elif id == 1:
+        oled.icon('wifi', 48, 10)
+        oled.text("Success", 36, 44, 0, True)
+    oled.show()
+
+
+def build(response):
+    oled.fpsPoll() # Count frames
+    oled.clear() # Clear display
+
+    # Build display
+    if len(activeReminders) == 0:
+    	# Set display sleep state
+    	oled.sleep(True)
+    else:
+    	# Set display sleep state
+    	if inputs.ldr_A.val_period < settings.ldrMinValue:
+    		oled.sleep(True)
+    	else:
+    		oled.sleep(False)
+
+    	# Different screens for different amount of active reminders
+    	if len(activeReminders) == 1:
+            node = activeReminders[ next(iter(activeReminders)) ]
+            descr = node['descr']
+            oled.icon(node['icon'], 48, 0)
+            oled.text(descr, (64 - ( len(descr) * 4 )), 36, 0) # Center aligned
+
+    	elif len(activeReminders) >= 2:
+            iterate = iter(activeReminders)
+
+    		# Left column
+            node = activeReminders[ next(iterate) ]
+            descr = node['descr']
+            oled.icon(node['icon'], 16, 0)
+            oled.text(descr, 0, 36, 1) # Left aligned
+
+            # oled.line(64,0, 64,64)
+            for i in range(0,16):
+                oled.pixel(64, i*4)
+
+            # Right column
+            node = activeReminders[ next(iterate) ]
+            descr = node['descr']
+            oled.icon(node['icon'], 80, 0)
+            oled.text(descr, 66, 36, 1) # Left aligned
+
+
+        # Show FPS counter
+    	oled.text(str(oled.fps), 0, 0)
+
+    	# Button state rectangles
+    	if inputs.but_A.val == 1:
+    		oled.rect(107, 62, 10, 2)
+    	else:
+    		oled.text(str(inputs.ldr_A.val_period), 104, 52)
+    	if inputs.but_B.val == 1:
+    		oled.rect(118, 62, 10, 2)
+
+    	oled.show()
