@@ -32,7 +32,12 @@ class Screen:
             self.fps_sec_prev = sec
             self.fps_new_sec = True
 
-    def text(self, txt, x=0, y=0, repl=False):
+    def text(self, txt, x=0, y=0, w=0, repl=False):
+        if w>0:
+            txt = txt.replace("-", "-\n")
+        else:
+            txt = txt.replace("-", "")
+
         txt = txt.split('\n')
 
         for i in range(0,len(txt)):
@@ -50,6 +55,9 @@ class Screen:
 
     def line(self, x1, y1, x2, y2):
         self.oled.line(x1, y1, x2, y2, 1)
+
+    def pixel(self, x, y):
+        self.oled.pixel(x, y, 1)
 
     def clear(self):
         self.oled.fill(0)

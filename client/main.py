@@ -34,12 +34,12 @@ displaySleep = False
 
 # Connect to WiFi
 oled.icon('wifi', 48, 10)
-oled.text("Connecting", 24, 44, True)
+oled.text("Connecting", 24, 44, 0, True)
 oled.show()
 http.do_connect()
 oled.clear()
 oled.icon('wifi', 48, 10)
-oled.text("Success", 36, 44, True)
+oled.text("Success", 36, 44, 0, True)
 oled.show()
 screenUpdateDelay.sleep()
 
@@ -107,24 +107,26 @@ while True:
 		if len(activeReminders) == 1:
 			descr = response[str(activeReminders[0])]['descr']
 			oled.icon(response[str(activeReminders[0])]['icon'], 48, 0)
-			oled.text(descr, (64 - ( len(descr) * 4 )), 36) # Center aligned
+			oled.text(descr, (64 - ( len(descr) * 4 )), 36, 0) # Center aligned
 
 		elif len(activeReminders) == 2:
 			# Left column
 			descr = response[str(activeReminders[0])]['descr']
 			oled.icon(response[str(activeReminders[0])]['icon'], 16, 0)
-			oled.text(descr, (32 - ( len(descr) * 4 )), 36) # Center aligned
+			oled.text(descr, 0, 36, 1) # Left aligned
 
-			oled.line(64,0, 64,64) # Column devider
+			# oled.line(64,0, 64,64)
+			for i in range(0,16):
+				oled.pixel(64, i*4)
 
 			# Right column
 			descr = response[str(activeReminders[1])]['descr']
 			oled.icon(response[str(activeReminders[1])]['icon'], 80, 0)
-			oled.text(descr, (96 - ( len(descr) * 4 )), 36) # Center aligned
+			oled.text(descr, 66, 36, 1) # Left aligned
 
 
+		oled.text(str(oled.fps), 0, 0)
 		# Button state rectangles
-		oled.text(str(oled.fps), 0, 56)
 		if inputs.but_A.val == 1:
 			oled.rect(107, 62, 10, 2)
 		else:
